@@ -4,18 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Customer Details</h2>
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-        </tr>   
-    </thead>
-    <tbody>
-        <tr>
-            <td>@Model.Id</td>
-            <td>@Model.Name</td>
-        </tr>
-    </tbody>
-</table>
+<h2>@Model.Name</h2>
+<ul>
+    <li>@Html.LabelFor(m => m.MembershipType): @Model.MembershipType.Name </li>
+    @if (Model.BirthDate.HasValue)
+    {
+        <li>@Html.LabelFor(m => m.BirthDate): @Model.BirthDate.Value.ToShortDateString() </li>
+    }
+    
+</ul>
+
