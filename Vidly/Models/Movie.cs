@@ -23,6 +23,7 @@ namespace Vidly.Models
 
         [Required]
         [Display(Name = "Number in Stock")]
+        [Range(1, 20, ErrorMessage = "There must be 1 to 20 purchased.")]
         public byte NumberInStock { get; set; }
 
         public Genre Genre { get; set; }

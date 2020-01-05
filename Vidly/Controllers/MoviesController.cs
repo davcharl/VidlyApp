@@ -54,6 +54,7 @@ namespace Vidly.Controllers
             var genres = _context.Genres.ToList();
             var viewModel = new MovieFormViewModel()
             {
+                Movie = new Movie(),
                 Genres = genres
             };
             ViewData["Message"] = "New Movie";
@@ -76,28 +77,51 @@ namespace Vidly.Controllers
             return View("MovieForm", viewModel);
         }
 
+        [HandleError(ExceptionType = typeof(HttpAntiForgeryException), View = "Index")]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
-            if (movie.Id == 0)
+            try
             {
-                movie.DateAdded = DateTime.Now;
-                _context.Movies.Add(movie);
+                if (!ModelState.IsValid)
+                {
+                    var genres = _context.Genres.ToList();
+                    var viewModel = new MovieFormViewModel
+                    {
+                        Movie = movie,
+                        Genres = genres
+                    };
+                    return View("MovieForm", viewModel);
+                }
+
+                if (movie.Id == 0)
+                {
+                    movie.DateAdded = DateTime.Now;
+                    _context.Movies.Add(movie);
+                }
+                else
+                {
+                    var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
+
+                    movieInDb.Name = movie.Name;
+                    //movieInDb.DateAdded = DateTime.Now;
+                    movieInDb.ReleaseDate = movie.ReleaseDate;
+                    movieInDb.GenreId = movie.GenreId;
+                    movieInDb.NumberInStock = movie.NumberInStock;
+                }
+
+                _context.SaveChanges();
+
+
+                return RedirectToAction("Index", "Movies");
             }
-            else
+            catch(HttpAntiForgeryException afe)
             {
-                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
-
-                movieInDb.Name = movie.Name;
-                //movieInDb.DateAdded = DateTime.Now;
-                movieInDb.ReleaseDate = movie.ReleaseDate;
-                movieInDb.GenreId = movie.GenreId;
-                movieInDb.NumberInStock = movie.NumberInStock;
+                ViewBag.message = afe.Message;
+                return RedirectToAction("GenericError", "Home");
             }
 
-            _context.SaveChanges();
-
-
-            return RedirectToAction("Index", "Movies");
+            
         }
 
     }

@@ -26,5 +26,14 @@ namespace Vidly.Controllers
 
             return View();
         }
+
+        public ActionResult GenericError()
+        {
+            ViewBag.Message = "Generic error page.";
+
+            return View();
+        }
+
+        
     }
 }
