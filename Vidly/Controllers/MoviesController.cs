@@ -54,7 +54,7 @@ namespace Vidly.Controllers
             var genres = _context.Genres.ToList();
             var viewModel = new MovieFormViewModel()
             {
-                Movie = new Movie(),
+                //Movie = new Movie(),
                 Genres = genres
             };
             ViewData["Message"] = "New Movie";
@@ -67,9 +67,9 @@ namespace Vidly.Controllers
             if (movie == null)
                 return HttpNotFound();
 
-            var viewModel = new MovieFormViewModel
+            var viewModel = new MovieFormViewModel(movie)
             {
-                Movie = movie,
+                //Movie = movie,
                 Genres = _context.Genres.ToList()
             };
 
@@ -81,47 +81,39 @@ namespace Vidly.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
+                var genres = _context.Genres.ToList();
+                var viewModel = new MovieFormViewModel(movie)
                 {
-                    var genres = _context.Genres.ToList();
-                    var viewModel = new MovieFormViewModel
-                    {
-                        Movie = movie,
-                        Genres = genres
-                    };
-                    return View("MovieForm", viewModel);
-                }
-
-                if (movie.Id == 0)
-                {
-                    movie.DateAdded = DateTime.Now;
-                    _context.Movies.Add(movie);
-                }
-                else
-                {
-                    var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
-
-                    movieInDb.Name = movie.Name;
-                    //movieInDb.DateAdded = DateTime.Now;
-                    movieInDb.ReleaseDate = movie.ReleaseDate;
-                    movieInDb.GenreId = movie.GenreId;
-                    movieInDb.NumberInStock = movie.NumberInStock;
-                }
-
-                _context.SaveChanges();
-
-
-                return RedirectToAction("Index", "Movies");
-            }
-            catch(HttpAntiForgeryException afe)
-            {
-                ViewBag.message = afe.Message;
-                return RedirectToAction("GenericError", "Home");
+                    //Movie = movie,
+                    Genres = genres
+                };
+                return View("MovieForm", viewModel);
             }
 
-            
+            if (movie.Id == 0)
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
+
+                movieInDb.Name = movie.Name;
+                //movieInDb.DateAdded = DateTime.Now;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
+            }
+
+            _context.SaveChanges();
+
+
+            return RedirectToAction("Index", "Movies");
+
+
         }
 
     }
