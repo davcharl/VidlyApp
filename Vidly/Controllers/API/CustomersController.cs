@@ -51,7 +51,6 @@ namespace Vidly.Controllers.API
             customerDto.Id = customer.Id;
 
             return Created(new Uri(Request.RequestUri + "/" + customerDto.Id), customerDto);
-            //return customerDto;
         }
 
         //PUT /api/customers/1
