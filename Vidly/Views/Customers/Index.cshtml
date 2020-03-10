@@ -15,18 +15,18 @@ else
     <table class="table table-bordered table-hover" id="customers">
         <thead>
             <tr>
-                <th>Delete</th>
                 <th>Customer</th>
                 <th>Membership Type</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var customer in Model)
             {
                 <tr>
-                    <td><button class="btn btn-link js-delete" data-customer-id="@customer.Id" >Delete</button></td>
                     <td>@Html.ActionLink(customer.Name, "Edit", "Customers", new { id = customer.Id }, null)</td>
                     <td>@customer.MembershipType.Name</td>
+                    <td><button class="btn btn-link js-delete" data-customer-id="@customer.Id">Delete</button></td>
                 </tr>
             }
         </tbody>       
@@ -36,18 +36,20 @@ else
 @section scripts{
     <script>
         $(document).ready(function () {
-            $("#customers .js-delete").on("click", function () {
+            $("#customers").on("click", ".js-delete", function () {
                 var button = $(this);
-                if (confirm("Are  you sure you want to delete this customer?")) {
-                    $.ajax({
-                        url: "/api/customers/" + button.attr("data-customer-id"),
-                        method: "DELETE",
-                        success: function(){
-                            button.parents("tr").remove();
-                        }
-                    });
-                }
 
+                bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/customers/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                button.parents("tr").remove();
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>
