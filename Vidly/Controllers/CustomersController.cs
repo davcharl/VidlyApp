@@ -24,7 +24,7 @@ namespace Vidly.Controllers
         // GET: Customers
         public ActionResult Index()
         {
-            //var customers = _context.Customers.Include(c => c.MembershipType).ToList(); // Not needed now that the apui is the source of data and the client to render
+            //var customers = _context.Customers.Include(c => c.MembershipType).ToList(); // Not needed now that the api is the source of data and the client to render
             return View();
         }
 
