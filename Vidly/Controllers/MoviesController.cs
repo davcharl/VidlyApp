@@ -35,7 +35,10 @@ namespace Vidly.Controllers
         {
             //var movies = _context.Movies.Include(m => m.Genre).ToList(); //Obsoleted by ajax call to API
 
-            return View();
+            if (User.IsInRole(RoleName.CanManageMovies))
+                return View("List");
+
+            return View("ReadOnlyList");
         }
 
         public ActionResult Details(int? id=0)
@@ -49,6 +52,8 @@ namespace Vidly.Controllers
 
             return View(movie);
         }
+
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             var genres = _context.Genres.ToList();
@@ -61,6 +66,7 @@ namespace Vidly.Controllers
             return View("MovieForm", viewModel);
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Edit(int id)
         {
             var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
@@ -79,6 +85,7 @@ namespace Vidly.Controllers
 
         [HandleError(ExceptionType = typeof(HttpAntiForgeryException), View = "Index")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Save(Movie movie)
         {
             if (!ModelState.IsValid)
